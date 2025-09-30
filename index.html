@@ -496,6 +496,7 @@
     const bgm = document.getElementById("bgm");
     const slideshowEl = document.getElementById("slideshow");
     let slideshowInterval = null;
+    const AUTO_SWITCH_DELAY = 3000; // 3秒自动切换
 
     // 初始化粒子效果
     createParticles();
@@ -542,16 +543,28 @@
         }
     }
 
+    // 重置自动切换计时器
+    function resetAutoSwitch() {
+        if (slideshowInterval) {
+            clearInterval(slideshowInterval);
+        }
+        slideshowInterval = setTimeout(nextPhoto, AUTO_SWITCH_DELAY);
+    }
+
     // 下一张
     function nextPhoto() {
         currentIndex = (currentIndex % totalPhotos) + 1;
         updatePhoto();
+        // 重置自动切换计时器
+        resetAutoSwitch();
     }
 
     // 上一张
     function prevPhoto() {
         currentIndex = (currentIndex - 2 + totalPhotos) % totalPhotos + 1;
         updatePhoto();
+        // 重置自动切换计时器
+        resetAutoSwitch();
     }
 
     // 更新图片
@@ -572,10 +585,12 @@
 
     // 自动轮播
     function startSlideshow() {
+        // 清除可能存在的旧计时器
         if (slideshowInterval) {
             clearInterval(slideshowInterval);
         }
-        slideshowInterval = setInterval(nextPhoto, 5000);
+        // 设置新的自动切换计时器
+        slideshowInterval = setTimeout(nextPhoto, AUTO_SWITCH_DELAY);
     }
 
     // 背景音乐控制
