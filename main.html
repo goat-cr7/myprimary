@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进入回忆</title>
+    <style>
+        /* 全局样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Microsoft Yahei", sans-serif;
+            background: linear-gradient(135deg, #f9d4d4, #f0e6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景粒子效果 */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(108, 99, 255, 0.6);
+            border-radius: 50%;
+            animation: jump 3s infinite ease-in-out;
+        }
+
+        /* 登录框 */
+        .login-box {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+            text-align: center;
+            width: 320px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            transform: translateY(0);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .login-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .login-box h1 {
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #6c63ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 15px rgba(108, 99, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #6c63ff, #8a7bff);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-box button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.6);
+        }
+
+        .login-box button:hover::before {
+            left: 100%;
+        }
+
+        .login-box button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #ff4757;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            min-height: 22px;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 抖动动画 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+            border: 2px solid #ff4757 !important;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.4) !important;
+        }
+
+        /* 相册容器（默认隐藏） */
+        .gallery-container {
+            display: none;
+            position: relative;
+            width: 85%;
+            max-width: 950px;
+            height: 75%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border-radius: 25px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f9d4d4, #f0e6ff); /* 温暖的米色背景 */
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .gallery-container.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .slideshow {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .slideshow::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: var(--bg-image) center/cover no-repeat;
+            filter: blur(30px) brightness(0.7) saturate(1.1);
+            transform: scale(1.15);
+            z-index: 0;
+            transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .slideshow img {
+            position: relative;
+            z-index: 1;
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4),
+            0 0 50px rgba(108, 99, 255, 0.3);
+            animation: fadeInScale 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: transform 0.3s ease;
+            background-color: transparent; /* 确保图片透明部分显示背景色 */
+        }
+
+        .slideshow img:hover {
+            transform: scale(1.02);
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotate(-5deg);
+            }
+            70% {
+                transform: scale(1.05) rotate(2deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* 控制按钮 */
+        .controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            z-index: 2;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .controls button {
+            background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+            border: none;
+            font-size: 2.2rem;
+            padding: 15px 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .controls button:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.8));
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .controls button:active {
+            transform: scale(1) translateY(0);
+        }
+
+        /* 音乐控制 */
+        .music-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2;
+        }
+
+        .music-controls button {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .music-controls button:hover {
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.7));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .music-controls button:active {
+            transform: translateY(0);
+        }
+
+        /* 页面切换动画 */
+        @keyframes pageTransition {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
+            100% { transform: scale(0) rotate(10deg); opacity: 0; }
+        }
+
+        .login-box.exiting {
+            animation: pageTransition 0.6s forwards;
+        }
+
+        /* 跳动动画 - 粒子效果 */
+        @keyframes jump {
+            0%, 100% {
+                transform: translateY(0px) scale(1);
+                opacity: 0.6;
+            }
+            25% {
+                transform: translateY(-20px) scale(1.2);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(0px) scale(0.8);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(-10px) scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* 光晕效果 */
+        .halo {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 背景光晕 -->
+<div class="halo" style="top: 20%; left: 10%;"></div>
+<div class="halo" style="top: 80%; left: 85%; width: 200px; height: 200px;"></div>
+
+<!-- 登录页 -->
+<div class="login-box" id="loginBox">
+    <h1>进入回忆</h1>
+    <input type="text" id="name" placeholder="请输入姓名">
+    <input type="text" id="school" placeholder="请输入学校">
+    <button onclick="checkLogin()">进入</button>
+    <div class="error" id="errorMsg"></div>
+</div>
+
+<!-- 相册页 -->
+<div class="gallery-container" id="gallery">
+    <div class="slideshow" id="slideshow">
+        <img id="slide" src="img/primary (1).jpg" alt="Memory Photo">
+    </div>
+
+    <div class="controls">
+        <button onclick="prevPhoto()">⟨</button>
+        <button onclick="nextPhoto()">⟩</button>
+    </div>
+
+    <div class="music-controls">
+        <button onclick="toggleMusic()">🎵 播放/暂停音乐</button>
+    </div>
+</div>
+
+<audio id="bgm" src="boyfriend.mp3" loop></audio>
+
+<script>
+    // 创建背景粒子效果
+    function createParticles() {
+        const particlesContainer = document.createElement('div');
+        particlesContainer.className = 'particles';
+        document.body.appendChild(particlesContainer);
+
+        for (let i = 0; i < 80; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            particle.style.width = (Math.random() * 6 + 2) + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.background = `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 100}, 255, ${Math.random() * 0.4 + 0.3})`;
+            particlesContainer.appendChild(particle);
+        }
+    }
+
+    // 允许进入的姓名+学校列表
+    const validList = [
+        { name: "方周", school: "青龙初中" },
+        { name: "李林伟", school: "青龙初中" },
+        { name: "王翰阳", school: "青龙初中" },
+        { name: "曾文海", school: "青龙初中" },
+        { name: "陈成", school: "青龙初中" },
+        { name: "李康成", school: "青龙初中" },
+        { name: "赵阳梦", school: "青龙初中" },
+        { name: "魏巍", school: "青龙初中" },
+        { name: "罗一翔", school: "青龙初中"},
+        { name: "刘洪宇", school: "青龙初中"}
+    ];
+
+    let currentIndex = 1;
+    const totalPhotos = 23;
+    const slide = document.getElementById("slide");
+    const bgm = document.getElementById("bgm");
+    const slideshowEl = document.getElementById("slideshow");
+    let slideshowInterval = null;
+
+    // 初始化粒子效果
+    createParticles();
+
+    function checkLogin() {
+        const nameInput = document.getElementById("name");
+        const schoolInput = document.getElementById("school");
+        const name = nameInput.value.trim();
+        const school = schoolInput.value.trim();
+        const errorMsg = document.getElementById("errorMsg");
+
+        const isValid = validList.some(
+            person => person.name === name && person.school === school
+        );
+
+        if (isValid) {
+            // 添加退出动画
+            const loginBox = document.getElementById("loginBox");
+            loginBox.classList.add("exiting");
+
+            setTimeout(() => {
+                // 隐藏登录框，显示相册
+                loginBox.style.display = "none";
+                const gallery = document.getElementById("gallery");
+                gallery.style.display = "block";
+                gallery.classList.add("show");
+
+                // 播放音乐
+                bgm.play().catch(e => console.log("自动播放被阻止"));
+
+                // 启动轮播
+                startSlideshow();
+            }, 600);
+        } else {
+            errorMsg.textContent = "你是青龙初中的人吗？你就想回忆";
+
+            nameInput.classList.add("shake");
+            schoolInput.classList.add("shake");
+
+            setTimeout(() => {
+                nameInput.classList.remove("shake");
+                schoolInput.classList.remove("shake");
+            }, 500);
+        }
+    }
+
+    // 下一张
+    function nextPhoto() {
+        currentIndex = (currentIndex % totalPhotos) + 1;
+        updatePhoto();
+    }
+
+    // 上一张
+    function prevPhoto() {
+        currentIndex = (currentIndex - 2 + totalPhotos) % totalPhotos + 1;
+        updatePhoto();
+    }
+
+    // 更新图片
+    function updatePhoto() {
+        const newSrc = `img/primary (${currentIndex}).jpg`;
+        slide.src = newSrc;
+
+        // 添加淡出淡入效果
+        slide.style.opacity = '0';
+        slide.style.transform = 'scale(0.95)';
+
+        setTimeout(() => {
+            slideshowEl.style.setProperty("--bg-image", `url(${newSrc})`);
+            slide.style.opacity = '1';
+            slide.style.transform = 'scale(1)';
+        }, 300);
+    }
+
+    // 自动轮播
+    function startSlideshow() {
+        if (slideshowInterval) {
+            clearInterval(slideshowInterval);
+        }
+        slideshowInterval = setInterval(nextPhoto, 5000);
+    }
+
+    // 背景音乐控制
+    function toggleMusic() {
+        if (bgm.paused) {
+            bgm.play().catch(e => console.log("播放被阻止"));
+        } else {
+            bgm.pause();
+        }
+    }
+
+    // 键盘快捷键支持
+    document.addEventListener('keydown', function(e) {
+        if (document.getElementById("gallery").style.display === "block") {
+            if (e.key === 'ArrowLeft') {
+                prevPhoto();
+            } else if (e.key === 'ArrowRight') {
+                nextPhoto();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                toggleMusic();
+            }
+        }
+    });
+</script>
+</body>
+</html>
