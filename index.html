@@ -2,10 +2,14 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>进入回忆</title>
     <style>
         /* 全局样式 */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -14,7 +18,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             overflow: hidden;
             position: relative;
         }
@@ -42,15 +46,17 @@
         /* 登录框 */
         .login-box {
             background: rgba(255,255,255,0.95);
-            padding: 40px;
+            padding: 30px 25px;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.25);
             text-align: center;
-            width: 320px;
+            width: 90%;
+            max-width: 320px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.5);
             transform: translateY(0);
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 0 10px;
         }
 
         .login-box:hover {
@@ -58,9 +64,9 @@
         }
 
         .login-box h1 {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #333;
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             background: linear-gradient(45deg, #6c63ff, #ff6b6b);
             -webkit-background-clip: text;
@@ -71,7 +77,7 @@
         .login-box input {
             width: 100%;
             padding: 12px 15px;
-            margin: 12px 0;
+            margin: 10px 0;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1rem;
@@ -100,6 +106,7 @@
             box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
             position: relative;
             overflow: hidden;
+            margin-top: 15px;
         }
 
         .login-box button::before {
@@ -128,9 +135,9 @@
 
         .error {
             color: #ff4757;
-            margin-top: 15px;
-            font-size: 0.95rem;
-            min-height: 22px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            min-height: 20px;
             font-weight: 500;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
@@ -152,13 +159,14 @@
         .gallery-container {
             display: none;
             position: relative;
-            width: 85%;
+            width: 95%;
             max-width: 950px;
-            height: 75%;
+            height: 80vh;
+            max-height: 80vh;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            border-radius: 25px;
+            border-radius: 20px;
             overflow: hidden;
-            background: linear-gradient(135deg, #f9d4d4, #f0e6ff); /* 温暖的米色背景 */
+            background: linear-gradient(135deg, #f9d4d4, #f0e6ff);
             transform: scale(0.8);
             opacity: 0;
             transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -183,24 +191,26 @@
             position: absolute;
             inset: 0;
             background: var(--bg-image) center/cover no-repeat;
-            filter: blur(30px) brightness(0.7) saturate(1.1);
-            transform: scale(1.15);
+            filter: blur(20px) brightness(0.7) saturate(1.1);
+            transform: scale(1.1);
             z-index: 0;
-            transition: all 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         .slideshow img {
             position: relative;
             z-index: 1;
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 95%;
+            max-height: 85%;
+            height: auto;
+            width: auto;
             object-fit: contain;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4),
-            0 0 50px rgba(108, 99, 255, 0.3);
-            animation: fadeInScale 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4),
+            0 0 40px rgba(108, 99, 255, 0.3);
+            animation: fadeInScale 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             transition: transform 0.3s ease;
-            background-color: transparent; /* 确保图片透明部分显示背景色 */
+            background-color: transparent;
         }
 
         .slideshow img:hover {
@@ -210,10 +220,10 @@
         @keyframes fadeInScale {
             0% {
                 opacity: 0;
-                transform: scale(0.8) rotate(-5deg);
+                transform: scale(0.8) rotate(-3deg);
             }
             70% {
-                transform: scale(1.05) rotate(2deg);
+                transform: scale(1.03) rotate(1deg);
             }
             100% {
                 opacity: 1;
@@ -230,27 +240,32 @@
             justify-content: space-between;
             transform: translateY(-50%);
             z-index: 2;
-            padding: 0 20px;
+            padding: 0 15px;
             box-sizing: border-box;
         }
 
         .controls button {
             background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
             border: none;
-            font-size: 2.2rem;
-            padding: 15px 25px;
+            font-size: 1.8rem;
+            padding: 12px 20px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.5);
+            min-width: 50px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .controls button:hover {
             background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.8));
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         .controls button:active {
@@ -260,8 +275,8 @@
         /* 音乐控制 */
         .music-controls {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             z-index: 2;
         }
 
@@ -269,20 +284,21 @@
             background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.3);
             font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 0.9rem;
         }
 
         .music-controls button:hover {
             background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(0,0,0,0.7));
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
         }
 
         .music-controls button:active {
@@ -292,12 +308,12 @@
         /* 页面切换动画 */
         @keyframes pageTransition {
             0% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.1) rotate(5deg); opacity: 0.8; }
-            100% { transform: scale(0) rotate(10deg); opacity: 0; }
+            50% { transform: scale(1.05) rotate(2deg); opacity: 0.8; }
+            100% { transform: scale(0.9) rotate(5deg); opacity: 0; }
         }
 
         .login-box.exiting {
-            animation: pageTransition 0.6s forwards;
+            animation: pageTransition 0.5s forwards;
         }
 
         /* 跳动动画 - 粒子效果 */
@@ -307,7 +323,7 @@
                 opacity: 0.6;
             }
             25% {
-                transform: translateY(-20px) scale(1.2);
+                transform: translateY(-15px) scale(1.2);
                 opacity: 1;
             }
             50% {
@@ -315,7 +331,7 @@
                 opacity: 0.4;
             }
             75% {
-                transform: translateY(-10px) scale(1.1);
+                transform: translateY(-8px) scale(1.1);
                 opacity: 0.8;
             }
         }
@@ -323,8 +339,8 @@
         /* 光晕效果 */
         .halo {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 200px;
+            height: 200px;
             background: radial-gradient(circle, rgba(108, 99, 255, 0.1) 0%, transparent 70%);
             border-radius: 50%;
             z-index: -1;
@@ -333,21 +349,88 @@
 
         @keyframes pulse {
             0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        /* 移动端触摸反馈 */
+        @media (hover: none) and (pointer: coarse) {
+            .login-box:hover,
+            .controls button:hover,
+            .music-controls button:hover {
+                transform: none;
+            }
+
+            .login-box:active,
+            .controls button:active,
+            .music-controls button:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* 小屏幕优化 */
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 25px 20px;
+                width: 95%;
+                max-width: 300px;
+            }
+
+            .login-box h1 {
+                font-size: 1.6rem;
+                margin-bottom: 18px;
+            }
+
+            .controls button {
+                font-size: 1.6rem;
+                padding: 10px 18px;
+                min-width: 45px;
+                min-height: 45px;
+            }
+
+            .music-controls button {
+                padding: 7px 14px;
+                font-size: 0.85rem;
+            }
+
+            .gallery-container {
+                height: 75vh;
+                max-height: 75vh;
+                border-radius: 18px;
+            }
+
+            .slideshow img {
+                max-height: 80%;
+                border-radius: 10px;
+            }
+        }
+
+        /* 禁用双击缩放 */
+        body {
+            touch-action: manipulation;
+        }
+
+        /* 滚动条隐藏（移动端不需要） */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
 <body>
 
 <!-- 背景光晕 -->
-<div class="halo" style="top: 20%; left: 10%;"></div>
-<div class="halo" style="top: 80%; left: 85%; width: 200px; height: 200px;"></div>
+<div class="halo" style="top: 20%; left: 10%; width: 150px; height: 150px;"></div>
+<div class="halo" style="top: 80%; left: 85%; width: 120px; height: 120px;"></div>
 
 <!-- 登录页 -->
 <div class="login-box" id="loginBox">
     <h1>进入回忆</h1>
-    <input type="text" id="name" placeholder="请输入姓名">
-    <input type="text" id="school" placeholder="请输入学校">
+    <input type="text" id="name" placeholder="请输入姓名" autocomplete="off">
+    <input type="text" id="school" placeholder="请输入学校" autocomplete="off">
     <button onclick="checkLogin()">进入</button>
     <div class="error" id="errorMsg"></div>
 </div>
@@ -364,7 +447,7 @@
     </div>
 
     <div class="music-controls">
-        <button onclick="toggleMusic()">🎵 播放/暂停音乐</button>
+        <button onclick="toggleMusic()">🎵 播放/暂停</button>
     </div>
 </div>
 
@@ -377,14 +460,16 @@
         particlesContainer.className = 'particles';
         document.body.appendChild(particlesContainer);
 
-        for (let i = 0; i < 80; i++) {
+        const particleCount = window.innerWidth < 768 ? 40 : 80;
+
+        for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.style.left = Math.random() * 100 + '%';
             particle.style.top = Math.random() * 100 + '%';
             particle.style.animationDelay = Math.random() * 3 + 's';
             particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            particle.style.width = (Math.random() * 6 + 2) + 'px';
+            particle.style.width = (Math.random() * 4 + 2) + 'px';
             particle.style.height = particle.style.width;
             particle.style.background = `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100 + 100}, 255, ${Math.random() * 0.4 + 0.3})`;
             particlesContainer.appendChild(particle);
@@ -401,7 +486,7 @@
         { name: "李康成", school: "青龙初中" },
         { name: "赵阳梦", school: "青龙初中" },
         { name: "魏巍", school: "青龙初中" },
-        { name: "罗一翔", school: "青龙初中"},
+        { name: "卢叶翔", school: "青龙初中"},
         { name: "刘洪宇", school: "青龙初中"}
     ];
 
@@ -443,7 +528,7 @@
 
                 // 启动轮播
                 startSlideshow();
-            }, 600);
+            }, 500);
         } else {
             errorMsg.textContent = "你是青龙初中的人吗？你就想回忆";
 
@@ -482,7 +567,7 @@
             slideshowEl.style.setProperty("--bg-image", `url(${newSrc})`);
             slide.style.opacity = '1';
             slide.style.transform = 'scale(1)';
-        }, 300);
+        }, 250);
     }
 
     // 自动轮播
@@ -515,6 +600,42 @@
             }
         }
     });
+
+    // 触摸滑动支持（移动端）
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.getElementById("slideshow").addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    document.getElementById("slideshow").addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+        const minSwipeDistance = 50;
+        const distance = touchStartX - touchEndX;
+
+        if (Math.abs(distance) >= minSwipeDistance) {
+            if (distance > 0) {
+                nextPhoto(); // 向左滑动，下一张
+            } else {
+                prevPhoto(); // 向右滑动，上一张
+            }
+        }
+    }
+
+    // 防止页面缩放
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+
+    // 禁用上下滑动页面（移动端优化）
+    document.getElementById("gallery").addEventListener('touchmove', function(e) {
+        e.preventDefault();
+    }, { passive: false });
 </script>
 </body>
 </html>
