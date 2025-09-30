@@ -194,7 +194,7 @@
             filter: blur(20px) brightness(0.7) saturate(1.1);
             transform: scale(1.1);
             z-index: 0;
-            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.6s ease;
         }
 
         .slideshow img {
@@ -208,27 +208,13 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4),
             0 0 40px rgba(108, 99, 255, 0.3);
-            animation: fadeInScale 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            transition: transform 0.3s ease;
+            opacity: 1;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             background-color: transparent;
         }
 
         .slideshow img:hover {
             transform: scale(1.02);
-        }
-
-        @keyframes fadeInScale {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) rotate(-3deg);
-            }
-            70% {
-                transform: scale(1.03) rotate(1deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
         }
 
         /* 控制按钮 */
@@ -546,7 +532,7 @@
     // 重置自动切换计时器
     function resetAutoSwitch() {
         if (slideshowInterval) {
-            clearInterval(slideshowInterval);
+            clearTimeout(slideshowInterval);
         }
         slideshowInterval = setTimeout(nextPhoto, AUTO_SWITCH_DELAY);
     }
@@ -567,27 +553,39 @@
         resetAutoSwitch();
     }
 
-    // 更新图片
+    // 更新图片 - 修复闪烁问题
     function updatePhoto() {
         const newSrc = `img/primary (${currentIndex}).jpg`;
-        slide.src = newSrc;
 
-        // 添加淡出淡入效果
-        slide.style.opacity = '0';
-        slide.style.transform = 'scale(0.95)';
+        // 创建新的图片对象预加载
+        const newImage = new Image();
+        newImage.onload = function() {
+            // 图片加载完成后才更新显示
+            slide.style.opacity = '0';
 
-        setTimeout(() => {
+            setTimeout(() => {
+                slide.src = newSrc;
+                slideshowEl.style.setProperty("--bg-image", `url(${newSrc})`);
+                slide.style.opacity = '1';
+            }, 150);
+        };
+
+        // 如果图片加载失败，也更新显示（避免卡住）
+        newImage.onerror = function() {
+            slide.src = newSrc;
             slideshowEl.style.setProperty("--bg-image", `url(${newSrc})`);
             slide.style.opacity = '1';
-            slide.style.transform = 'scale(1)';
-        }, 250);
+        };
+
+        // 开始预加载
+        newImage.src = newSrc;
     }
 
     // 自动轮播
     function startSlideshow() {
         // 清除可能存在的旧计时器
         if (slideshowInterval) {
-            clearInterval(slideshowInterval);
+            clearTimeout(slideshowInterval);
         }
         // 设置新的自动切换计时器
         slideshowInterval = setTimeout(nextPhoto, AUTO_SWITCH_DELAY);
